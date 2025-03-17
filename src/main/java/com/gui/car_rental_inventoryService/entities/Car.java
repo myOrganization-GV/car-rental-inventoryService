@@ -32,7 +32,7 @@ public class Car {
     private AvailabilityStatus availabilityStatus;
 
     private String transmissionType;
-
+    private String model;
     private Integer numberOfSeats;
 
     private Integer numberOfDoors;
@@ -50,6 +50,14 @@ public class Car {
     private LocalDateTime updatedAt;
 
     public Car() {
+    }
+
+    public String getModel() {
+        return model;
+    }
+
+    public void setModel(String model) {
+        this.model = model;
     }
 
     public UUID getCarId() {
@@ -161,11 +169,11 @@ public class Car {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Car car = (Car) o;
-        return Objects.equals(getCarId(), car.getCarId()) && Objects.equals(getManufacturer(), car.getManufacturer()) && getCategory() == car.getCategory() && Objects.equals(getYear(), car.getYear()) && Objects.equals(getColor(), car.getColor()) && getAvailabilityStatus() == car.getAvailabilityStatus() && Objects.equals(getTransmissionType(), car.getTransmissionType()) && Objects.equals(getNumberOfSeats(), car.getNumberOfSeats()) && Objects.equals(getNumberOfDoors(), car.getNumberOfDoors()) && Objects.equals(getPricePerDay(), car.getPricePerDay()) && Objects.equals(getImageUrl(), car.getImageUrl()) && Objects.equals(getCreatedAt(), car.getCreatedAt()) && Objects.equals(getUpdatedAt(), car.getUpdatedAt());
+        return Objects.equals(getCarId(), car.getCarId()) && Objects.equals(getManufacturer(), car.getManufacturer()) && getCategory() == car.getCategory() && Objects.equals(getYear(), car.getYear()) && Objects.equals(getColor(), car.getColor()) && getAvailabilityStatus() == car.getAvailabilityStatus() && Objects.equals(getTransmissionType(), car.getTransmissionType()) && Objects.equals(getModel(), car.getModel()) && Objects.equals(getNumberOfSeats(), car.getNumberOfSeats()) && Objects.equals(getNumberOfDoors(), car.getNumberOfDoors()) && Objects.equals(getPricePerDay(), car.getPricePerDay()) && Objects.equals(getImageUrl(), car.getImageUrl()) && Objects.equals(getCreatedAt(), car.getCreatedAt()) && Objects.equals(getUpdatedAt(), car.getUpdatedAt());
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(getCarId(), getManufacturer(), getCategory(), getYear(), getColor(), getAvailabilityStatus(), getTransmissionType(), getNumberOfSeats(), getNumberOfDoors(), getPricePerDay(), getImageUrl(), getCreatedAt(), getUpdatedAt());
+        return Objects.hash(getCarId(), getManufacturer(), getCategory(), getYear(), getColor(), getAvailabilityStatus(), getTransmissionType(), getModel(), getNumberOfSeats(), getNumberOfDoors(), getPricePerDay(), getImageUrl(), getCreatedAt(), getUpdatedAt());
     }
 }
