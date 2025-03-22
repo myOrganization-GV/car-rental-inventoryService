@@ -3,6 +3,7 @@ package com.gui.car_rental_inventoryService.entities;
 import com.gui.car_rental_inventoryService.enums.AvailabilityStatus;
 import com.gui.car_rental_inventoryService.enums.Category;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.*;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
@@ -19,24 +20,39 @@ public class Car {
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID carId;
 
+    @NotNull(message = "Manufacturer is required")
+    @NotBlank(message = "Manufacturer is required")
     private String manufacturer;
 
+    @NotNull(message = "Category is required")
+    @Enumerated(EnumType.STRING)
     private Category category;
-
+    @NotNull(message = "Year is required")
+    @Min(value = 2000, message = "Year must be at least 2000")
     private Integer year;
-
+    @NotBlank(message = "Color is required")
     private String color;
 
     @Column(name = "availability_status")
     @Enumerated(EnumType.STRING)
     private AvailabilityStatus availabilityStatus;
 
+    @NotBlank(message = "Transmission type is required")
     private String transmissionType;
-    private String model;
-    private Integer numberOfSeats;
 
+    @NotBlank(message = "Model is required")
+    private String model;
+
+    @NotNull(message = "Number of seats is required")
+    @Min(value = 1, message = "Number of seats must be at least 1")
+    @Max(value = 10, message = "Number of seats cannot be greater than 10")
+    private Integer numberOfSeats;
+    @NotNull(message = "Number of doors is required")
+    @Min(value = 2, message = "Number of doors must be at least 2")
+    @Max(value = 5, message = "Number of doors cannot be greater than 5")
     private Integer numberOfDoors;
 
+    @NotNull(message = "Price per day is required")
     private BigDecimal pricePerDay;
 
     private String imageUrl;
