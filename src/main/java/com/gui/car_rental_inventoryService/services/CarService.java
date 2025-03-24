@@ -1,5 +1,7 @@
 package com.gui.car_rental_inventoryService.services;
 
+import com.gui.car_rental_common.events.CarReservationFailedEvent;
+import com.gui.car_rental_common.events.CarReservedEvent;
 import com.gui.car_rental_inventoryService.dtos.CarDto;
 import com.gui.car_rental_inventoryService.entities.Car;
 import com.gui.car_rental_inventoryService.enums.AvailabilityStatus;
@@ -7,18 +9,23 @@ import com.gui.car_rental_inventoryService.enums.Category;
 import com.gui.car_rental_inventoryService.exceptions.CarNotFoundException;
 import com.gui.car_rental_inventoryService.repositories.CarRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.UUID;
 
 @Service
+@Transactional
 public class CarService {
 
     private final CarRepository carRepository;
+    private final KafkaTemplate<String, Object> kafkaTemplate;
     @Autowired
-    public CarService(CarRepository carRepository){
+    public CarService(CarRepository carRepository, KafkaTemplate<String,Object> kafkaTemplate){
         this.carRepository = carRepository;
+        this.kafkaTemplate = kafkaTemplate;
     }
 
     public List<Car> getAllCars() {
@@ -121,4 +128,30 @@ public class CarService {
         carRepository.save(car);
         return car;
     }
+
+    public Car reserveCar(UUID carId, String sagaTransactionId){
+
+        Car car = carRepository.findById(carId)
+                .orElseThrow(() -> new CarNotFoundException("Car with ID " + carId + " not found"));
+
+        if(car.getAvailabilityStatus() == AvailabilityStatus.AVAILABLE){
+            car.setAvailabilityStatus(AvailabilityStatus.RESERVED);
+            carRepository.save(car);
+
+            CarReservedEvent event = new CarReservedEvent(carId, sagaTransactionId);
+            kafkaTemplate.send("inventory-service-events", event);
+        }else{
+            CarReservationFailedEvent event = new CarReservationFailedEvent(
+                    carId,
+                    sagaTransactionId,
+                    "Car is not available for reservation. Current status: " + car.getAvailabilityStatus()
+            );
+            kafkaTemplate.send("inventory-service-events", event);
+            throw new IllegalStateException("Car with ID " + carId + " is not available for reservation.");
+        }
+
+        return car;
+    }
+
+
 }

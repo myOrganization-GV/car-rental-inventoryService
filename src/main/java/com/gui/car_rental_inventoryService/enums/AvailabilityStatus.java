@@ -4,5 +4,6 @@ public enum AvailabilityStatus {
     AVAILABLE,
     RENTED,
     RESERVED,
+    PENDING,
     MAINTENANCE
 }
