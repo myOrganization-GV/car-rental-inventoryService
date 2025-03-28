@@ -1,7 +1,7 @@
 package com.gui.car_rental_inventoryService.services;
 
-import com.gui.car_rental_common.events.CarReservationFailedEvent;
-import com.gui.car_rental_common.events.CarReservedEvent;
+import com.gui.car_rental_common.events.inventory.CarReservationFailedEvent;
+import com.gui.car_rental_common.events.inventory.CarReservedEvent;
 import com.gui.car_rental_inventoryService.dtos.CarDto;
 import com.gui.car_rental_inventoryService.entities.Car;
 import com.gui.car_rental_inventoryService.enums.AvailabilityStatus;
@@ -63,7 +63,6 @@ public class CarService {
     public Car putCar(UUID carId, CarDto carDto) {
         Car existingCar = carRepository.findById(carId)
                 .orElseThrow(() -> new CarNotFoundException("Car with ID " + carId + " not found"));
-
         existingCar.setManufacturer(carDto.getManufacturer());
         existingCar.setCategory(carDto.getCategory());
         existingCar.setYear(carDto.getYear());
@@ -129,28 +128,27 @@ public class CarService {
         return car;
     }
 
-    public Car reserveCar(UUID carId, String sagaTransactionId){
 
+    public Car reserveCar(UUID carId, UUID sagaTransactionId) {
         Car car = carRepository.findById(carId)
                 .orElseThrow(() -> new CarNotFoundException("Car with ID " + carId + " not found"));
-
-        if(car.getAvailabilityStatus() == AvailabilityStatus.AVAILABLE){
+        if (car.getAvailabilityStatus() == AvailabilityStatus.AVAILABLE) {
             car.setAvailabilityStatus(AvailabilityStatus.RESERVED);
-            carRepository.save(car);
-
-            CarReservedEvent event = new CarReservedEvent(carId, sagaTransactionId);
-            kafkaTemplate.send("inventory-service-events", event);
-        }else{
-            CarReservationFailedEvent event = new CarReservationFailedEvent(
-                    carId,
-                    sagaTransactionId,
-                    "Car is not available for reservation. Current status: " + car.getAvailabilityStatus()
-            );
-            kafkaTemplate.send("inventory-service-events", event);
-            throw new IllegalStateException("Car with ID " + carId + " is not available for reservation.");
+            return carRepository.save(car);
+        } else {
+            throw new IllegalStateException("Car with ID " + carId + " is not available for reservation. Current status: " + car.getAvailabilityStatus());
         }
+    }
 
-        return car;
+    public Car cancelCarReservation(UUID carId) {
+        Car car = carRepository.findById(carId)
+                .orElseThrow(() -> new CarNotFoundException("Car with ID " + carId + " not found"));
+        if (car.getAvailabilityStatus() == AvailabilityStatus.RESERVED) {
+            car.setAvailabilityStatus(AvailabilityStatus.AVAILABLE);
+            return carRepository.save(car);
+        } else {
+            throw new IllegalStateException("Car with ID " + carId + " is not Reserved. Current status: " + car.getAvailabilityStatus());
+        }
     }
 
 
