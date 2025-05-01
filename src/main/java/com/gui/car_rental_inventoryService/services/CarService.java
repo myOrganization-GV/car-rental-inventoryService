@@ -1,9 +1,8 @@
 package com.gui.car_rental_inventoryService.services;
 
-import com.gui.car_rental_common.events.inventory.CarReservationFailedEvent;
-import com.gui.car_rental_common.events.inventory.CarReservedEvent;
 import com.gui.car_rental_inventoryService.dtos.CarDto;
 import com.gui.car_rental_inventoryService.entities.Car;
+import com.gui.car_rental_inventoryService.entities.CarImage;
 import com.gui.car_rental_inventoryService.enums.AvailabilityStatus;
 import com.gui.car_rental_inventoryService.enums.Category;
 import com.gui.car_rental_inventoryService.exceptions.CarNotFoundException;
@@ -73,7 +72,16 @@ public class CarService {
         existingCar.setNumberOfSeats(carDto.getNumberOfSeats());
         existingCar.setNumberOfDoors(carDto.getNumberOfDoors());
         existingCar.setPricePerDay(carDto.getPricePerDay());
-        existingCar.setImageUrl(carDto.getImageUrl());
+        existingCar.getImages().clear();
+        if (carDto.getImageUrls() != null) {
+            carDto.getImageUrls().stream()
+                    .map(url ->{
+                        CarImage image = new CarImage();
+                        image.setImageUrl(url);
+                        image.setCar(existingCar);
+                        return image;
+                    }).forEach(existingCar::addImage);
+        }
 
         return carRepository.saveAndFlush(existingCar);
     }
@@ -113,9 +121,19 @@ public class CarService {
         if (carDto.getPricePerDay() != null) {
             existingCar.setPricePerDay(carDto.getPricePerDay());
         }
-        if (carDto.getImageUrl() != null) {
-            existingCar.setImageUrl(carDto.getImageUrl());
+        if (carDto.getImageUrls() != null) {
+            existingCar.getImages().clear();
+
+            carDto.getImageUrls().stream()
+                    .map(url -> {
+                        CarImage image = new CarImage();
+                        image.setImageUrl(url);
+                        image.setCar(existingCar);
+                        return image;
+                    })
+                    .forEach(existingCar::addImage);
         }
+
 
         return carRepository.saveAndFlush(existingCar);
     }
@@ -140,12 +158,12 @@ public class CarService {
         }
     }
 
-    public Car cancelCarReservation(UUID carId) {
+    public void cancelCarReservation(UUID carId) {
         Car car = carRepository.findById(carId)
                 .orElseThrow(() -> new CarNotFoundException("Car with ID " + carId + " not found"));
         if (car.getAvailabilityStatus() == AvailabilityStatus.RESERVED) {
             car.setAvailabilityStatus(AvailabilityStatus.AVAILABLE);
-            return carRepository.save(car);
+            carRepository.save(car);
         } else {
             throw new IllegalStateException("Car with ID " + carId + " is not Reserved. Current status: " + car.getAvailabilityStatus());
         }

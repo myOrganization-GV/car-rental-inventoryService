@@ -6,6 +6,8 @@ import com.gui.car_rental_inventoryService.enums.Category;
 import jakarta.validation.constraints.*;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 
 public class CarDto {
@@ -28,11 +30,12 @@ public class CarDto {
     private Integer numberOfDoors;
 
     private BigDecimal pricePerDay;
+    private List<String> imageUrls;
+
 
     public CarDto() {
+        this.imageUrls = new ArrayList<>();
     }
-
-    private String imageUrl;
 
     public String getManufacturer() {
         return manufacturer;
@@ -114,27 +117,25 @@ public class CarDto {
         this.pricePerDay = pricePerDay;
     }
 
-    public String getImageUrl() {
-        return imageUrl;
+    public List<String> getImageUrls() {
+        return imageUrls;
     }
 
-    public void setImageUrl(String imageUrl) {
-        this.imageUrl = imageUrl;
+    public void setImageUrls(List<String> imageUrls) {
+        this.imageUrls = imageUrls;
     }
 
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        CarDto carDto = (CarDto) o;
-        return Objects.equals(getManufacturer(), carDto.getManufacturer()) && getCategory() == carDto.getCategory() && Objects.equals(getYear(), carDto.getYear()) && Objects.equals(getColor(), carDto.getColor()) && getAvailabilityStatus() == carDto.getAvailabilityStatus() && Objects.equals(getTransmissionType(), carDto.getTransmissionType()) && Objects.equals(getModel(), carDto.getModel()) && Objects.equals(getNumberOfSeats(), carDto.getNumberOfSeats()) && Objects.equals(getNumberOfDoors(), carDto.getNumberOfDoors()) && Objects.equals(getPricePerDay(), carDto.getPricePerDay()) && Objects.equals(getImageUrl(), carDto.getImageUrl());
+        if (!(o instanceof CarDto carDto)) return false;
+        return Objects.equals(getManufacturer(), carDto.getManufacturer()) && getCategory() == carDto.getCategory() && Objects.equals(getYear(), carDto.getYear()) && Objects.equals(getColor(), carDto.getColor()) && getAvailabilityStatus() == carDto.getAvailabilityStatus() && Objects.equals(getTransmissionType(), carDto.getTransmissionType()) && Objects.equals(getModel(), carDto.getModel()) && Objects.equals(getNumberOfSeats(), carDto.getNumberOfSeats()) && Objects.equals(getNumberOfDoors(), carDto.getNumberOfDoors()) && Objects.equals(getPricePerDay(), carDto.getPricePerDay()) && Objects.equals(getImageUrls(), carDto.getImageUrls());
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(getManufacturer(), getCategory(), getYear(), getColor(), getAvailabilityStatus(), getTransmissionType(), getModel(), getNumberOfSeats(), getNumberOfDoors(), getPricePerDay(), getImageUrl());
+        return Objects.hash(getManufacturer(), getCategory(), getYear(), getColor(), getAvailabilityStatus(), getTransmissionType(), getModel(), getNumberOfSeats(), getNumberOfDoors(), getPricePerDay(), getImageUrls());
     }
-
 
     public Car carFromCarDto() {
         Car car = new Car();
@@ -148,7 +149,6 @@ public class CarDto {
         car.setNumberOfSeats(this.getNumberOfSeats());
         car.setNumberOfDoors(this.getNumberOfDoors());
         car.setPricePerDay(this.getPricePerDay());
-        car.setImageUrl(this.getImageUrl());
         return car;
     }
 }
