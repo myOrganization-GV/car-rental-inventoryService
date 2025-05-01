@@ -46,6 +46,17 @@ public class CarController {
         Car car = carService.getCarById(carId);
        return ResponseEntity.ok(car);
     }
+    @GetMapping("/cars/manufacturer/{manufacturer}")
+    public ResponseEntity<List<Car>> getCarByManufacturer(@PathVariable String manufacturer){
+        List<Car> cars = carService.getCarByManufacturer(manufacturer);
+        return ResponseEntity.ok(cars);
+    }
+    @GetMapping("/cars/model/{carModel}")
+    public ResponseEntity<List<Car>> getCarByModel(@PathVariable String carModel){
+        List<Car> cars = carService.getCarByModel(carModel);
+        return ResponseEntity.ok(cars);
+    }
+
 
     @DeleteMapping("cars/{carId}")
     public ResponseEntity deleteCarById(@PathVariable UUID carId){

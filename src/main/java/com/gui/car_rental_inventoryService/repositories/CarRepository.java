@@ -18,6 +18,8 @@ public interface CarRepository extends JpaRepository<Car, UUID> {
     @Query("SELECT c FROM Car c WHERE c.model LIKE %:model%")
     List<Car> findByModel(@Param("model") String model);
 
+    @Query("SELECT c FROM Car c WHERE c.manufacturer LIKE %:manufacturer%")
+    List<Car> findByManufacturer(@Param("manufacturer") String manufacturer);
 
     List<Car> findByCategory(Category category);
 

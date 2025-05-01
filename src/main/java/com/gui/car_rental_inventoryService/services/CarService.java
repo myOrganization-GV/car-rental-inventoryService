@@ -45,6 +45,9 @@ public class CarService {
     public List<Car> getCarByModel(String model){
         return carRepository.findByModel(model);
     }
+    public List<Car> getCarByManufacturer(String manufacturer){
+        return carRepository.findByManufacturer(manufacturer);
+    }
 
     public List<Car> getCarByAvailability(AvailabilityStatus availabilityStatus){
         return carRepository.findByAvailabilityStatus(availabilityStatus);
