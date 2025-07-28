@@ -6,6 +6,7 @@ import com.gui.car_rental_inventoryService.entities.CarImage;
 import com.gui.car_rental_inventoryService.enums.AvailabilityStatus;
 import com.gui.car_rental_inventoryService.enums.Category;
 import com.gui.car_rental_inventoryService.exceptions.CarNotFoundException;
+import com.gui.car_rental_inventoryService.exceptions.InvalidAvailabilityException;
 import com.gui.car_rental_inventoryService.repositories.CarRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.kafka.core.KafkaTemplate;
@@ -150,14 +151,14 @@ public class CarService {
     }
 
 
-    public Car reserveCar(UUID carId, UUID sagaTransactionId) {
+    public Car reserveCar(UUID carId) {
         Car car = carRepository.findById(carId)
                 .orElseThrow(() -> new CarNotFoundException("Car with ID " + carId + " not found"));
         if (car.getAvailabilityStatus() == AvailabilityStatus.AVAILABLE) {
             car.setAvailabilityStatus(AvailabilityStatus.RESERVED);
             return carRepository.save(car);
         } else {
-            throw new IllegalStateException("Car with ID " + carId + " is not available for reservation. Current status: " + car.getAvailabilityStatus());
+            throw new InvalidAvailabilityException("Car with ID " + carId + " is not available for reservation. Current status: " + car.getAvailabilityStatus());
         }
     }
 

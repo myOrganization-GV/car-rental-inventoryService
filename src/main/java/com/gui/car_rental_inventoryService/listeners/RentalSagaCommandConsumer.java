@@ -33,12 +33,11 @@ public class RentalSagaCommandConsumer {
     public void consumeReserveCarCommand(ReserveCarCommand command) {
         logger.info("Received ReserveCarCommand: {}", command);
         try {
-           Car reservedCar = carService.reserveCar(command.getBookingDto().getCarId(), command.getSagaTransactionId());
-
+           Car reservedCar = carService.reserveCar(command.getBookingDto().getCarId());
+            command.getBookingDto().setPricePerDay(reservedCar.getPricePerDay());
            CarReservedEvent event = new CarReservedEvent(
                    command.getSagaTransactionId(),
-                   command.getBookingDto(),
-                   reservedCar.getPricePerDay()
+                   command.getBookingDto()
             );
             logger.info("Reservation completed sending carReservedEvent with saga Id: {}", event.getSagaTransactionId());
             kafkaTemplate.send("inventory-service-events", event);

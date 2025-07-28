@@ -31,6 +31,7 @@ public class Car {
     private Category category;
     @NotNull(message = "Year is required")
     @Min(value = 2000, message = "Year must be at least 2000")
+    @Column(name="car_year")
     private Integer year;
     @NotBlank(message = "Color is required")
     private String color;
